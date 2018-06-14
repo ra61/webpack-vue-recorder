@@ -1,18 +1,22 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const webpack = require('webpack');
 const { VueLoaderPlugin } = require('vue-loader');
 
 module.exports = {
     mode: 'development',
     entry: {
-        app: './src/main.js',
-        waveWorker: './src/waveWorker.min.js',
+        app: './src/main.js'
     },
     output: {
-        // filename: 'bundle.js',
         filename: '[name].bundle.js',
         path: path.resolve(__dirname, 'dist')
+    },
+    devServer: {
+        contentBase: path.resolve(__dirname, 'dist'),   // 可访问文件
+        hot: true
     },
     module: {
         rules: [{
@@ -46,12 +50,20 @@ module.exports = {
     },
     plugins: [
         new VueLoaderPlugin(),
-        new CleanWebpackPlugin(['dist']),
+        new CleanWebpackPlugin(['dist/*.bundle.js']),
         new HtmlWebpackPlugin({
             filename: 'index.html',
-            template: 'index.html',
+            template: 'src/index.html',
             inject: true
-        })
+        }),
+        new CopyWebpackPlugin([
+            {
+                from: './asset',
+                to: './'
+            }
+        ]),
+        new webpack.NamedModulesPlugin(),
+        new webpack.HotModuleReplacementPlugin()
     ],
     resolve: {
         alias: {

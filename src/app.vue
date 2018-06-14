@@ -11,7 +11,7 @@
         name: 'app',
         data () {
             return {
-                msg: 'Welcome to My Recorder App'
+                msg: 'Welcome to My Recorder'
             }
         }
     }

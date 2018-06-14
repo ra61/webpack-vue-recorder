@@ -41,6 +41,7 @@
 <script>
 
     import Recorder from 'opus-recorder';
+    // import waveWorker from "opus-recorder/dist/waveWorker.min.js";
 
     export default {
         name: 'recorder',
@@ -56,7 +57,8 @@
                         recordingGain: 1,
                         numberOfChannels: 1,
                         wavBitDepth: 16,
-                        encoderPath: "./waveWorker.bundle.js"
+                        // encoderPath: "./waveWorker.bundle.js"
+                        encoderPath: "./waveWorker.min.js"
                     });
                 console.log(recorder);
                 recorder.start().catch(function(e){
