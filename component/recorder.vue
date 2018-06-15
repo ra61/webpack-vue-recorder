@@ -94,20 +94,21 @@
                 };
 
                 this.recorder.ondataavailable = function( typedArray ){
-                    var dataBlob = new Blob( [typedArray], { type: 'audio/wav' } );
-                    var fileName = new Date().toISOString() + ".wav";
-                    var url = URL.createObjectURL( dataBlob );
+                    
+                    let dataBlob = new Blob( [typedArray], { type: 'audio/wav' } );
+                    let fileName = new Date().toISOString() + ".wav";
+                    let url = URL.createObjectURL( dataBlob );
 
-                    var audio = document.createElement('audio');
+                    let audio = document.createElement('audio');
                     audio.controls = true;
                     audio.src = url;
 
-                    var link = document.createElement('a');
+                    let link = document.createElement('a');
                     link.href = url;
                     link.download = fileName;
                     link.innerHTML = link.download;
 
-                    var li = document.createElement('li');
+                    let li = document.createElement('li');
                     li.appendChild(link);
                     li.appendChild(audio);
 

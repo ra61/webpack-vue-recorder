@@ -8,15 +8,11 @@ const { VueLoaderPlugin } = require('vue-loader');
 module.exports = {
     mode: 'development',
     entry: {
-        app: './src/main.js'
+        app: './src/main.js',
     },
     output: {
         filename: '[name].bundle.js',
         path: path.resolve(__dirname, 'dist')
-    },
-    devServer: {
-        contentBase: path.resolve(__dirname, 'dist'),   // 可访问文件
-        hot: true
     },
     module: {
         rules: [{
