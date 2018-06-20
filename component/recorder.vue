@@ -1,11 +1,23 @@
 <template>
     <el-main id = 'recorder'>
         
-        <div>
-            <label>选择采样率：</label>
+        <div class="row">
+            <label>声道：</label>
+            <el-select v-model="channel" placeholder="请选择">
+                <el-option
+                v-for="item in channelOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+                </el-option>
+            </el-select>
+        </div>
+
+        <div class="row">
+            <label>采样率：</label>
             <el-select v-model="bitDepth" placeholder="请选择">
                 <el-option
-                v-for="item in options"
+                v-for="item in bitDepthOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
@@ -17,6 +29,17 @@
                 <option>8</option>
                 <option>16</option>
             </select> -->
+        </div>
+        <div class="row">
+            <label>输出格式：</label>
+            <el-select v-model="exportFormat" placeholder="请选择">
+                <el-option
+                v-for="item in exportFormatOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+                </el-option>
+            </el-select>
         </div>
 
         <div style="margin-top:15px;">
@@ -53,14 +76,30 @@
         name: 'recorder',
         data () {
             return {
-                options: [{
+                channelOptions: [{
+                    value: '单声道',
+                    label: 1
+                    }, {
+                    value: '双声道',
+                    label: 2
+                }],
+                channel: 2,
+                bitDepthOptions: [{
                     value: '8',
                     label: '8'
                     }, {
                     value: '16',
                     label: '16'
                 }],
-                bitDepth: '',
+                bitDepth: 16,
+                exportFormatOptions:[{
+                    value: 'wav',
+                    label: 'wav'
+                    }, {
+                    value: 'pcm',
+                    label: 'pcm'
+                }],
+                exportFormat:'wav',
                 initButton: false,
                 startButton: true,
                 pauseButton: true,
@@ -72,18 +111,27 @@
         },
         methods: {
             init:function(){
-
+                self = this;
                 this.initButton = true;
                 this.startButton = false;
 
-                this.recorder = new Recorder({
-                    monitorGain:0,
-                    recordingGain: 1,
-                    numberOfChannels: 2,
-                    wavBitDepth: 16,
-                    encoderPath: "./waveWorker.min.js"
-                    // encoderPath: "./pcmWorker.min.js"
-                });
+                if(self.exportFormat === 'wav'){
+                    this.recorder = new Recorder({
+                        monitorGain:0,
+                        recordingGain: 1,
+                        numberOfChannels: self.channel,
+                        wavBitDepth: self.bitDepth,
+                        encoderPath: "./waveWorker.min.js"
+                    });
+                } else {
+                    this.recorder = new Recorder({
+                        monitorGain:0,
+                        recordingGain: 1,
+                        numberOfChannels: self.channel,
+                        wavBitDepth: self.bitDepth,
+                        encoderPath: "./pcmWorker.min.js"
+                    });
+                }
                 
                 this.recorder.onstart = () => {
                     this.startButton = true;
@@ -117,25 +165,45 @@
                 };
 
                 this.recorder.ondataavailable = function( typedArray ){
+
+                    let dataBlob, fileName;
+
+                    if(self.exportFormat === 'wav'){
+                        dataBlob = new Blob( [typedArray], { type: 'audio/wav' } );
+                        fileName = new Date().toISOString() + ".wav";
+                        
+                        let url = URL.createObjectURL( dataBlob );
+
+                        let audio = document.createElement('audio');
+                        audio.controls = true;
+                        audio.src = url;
+
+                        let link = document.createElement('a');
+                        link.href = url;
+                        link.download = fileName;
+                        link.innerHTML = link.download;
+
+                        let li = document.createElement('li');
+                        li.appendChild(link);
+                        li.appendChild(audio);
+
+                        recordingslist.appendChild(li);
+                    } else {
+                        dataBlob = new Blob( [typedArray], { type: 'audio/pcm' } );
+                        fileName = new Date().toISOString() + ".pcm";
+
+                        let url = URL.createObjectURL( dataBlob );
+                        let link = document.createElement('a');
+                        link.href = url;
+                        link.download = fileName;
+                        link.innerHTML = link.download;
+
+                        let li = document.createElement('li');
+                        li.appendChild(link);
+
+                        recordingslist.appendChild(li);
+                    }
                     
-                    let dataBlob = new Blob( [typedArray], { type: 'audio/wav' } );
-                    let fileName = new Date().toISOString() + ".wav";
-                    let url = URL.createObjectURL( dataBlob );
-
-                    let audio = document.createElement('audio');
-                    audio.controls = true;
-                    audio.src = url;
-
-                    let link = document.createElement('a');
-                    link.href = url;
-                    link.download = fileName;
-                    link.innerHTML = link.download;
-
-                    let li = document.createElement('li');
-                    li.appendChild(link);
-                    li.appendChild(audio);
-
-                    recordingslist.appendChild(li);
                 };
             },
             start: function(){
@@ -162,5 +230,7 @@
     ul { list-style: none; }
     li { margin: 1em; }
     audio { display: block; }
+    label { width: 120px;display: inline-block;text-align: right; }
+    .row { margin:5px 0; }
   </style>
   
