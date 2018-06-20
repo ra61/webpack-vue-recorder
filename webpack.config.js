@@ -8,7 +8,8 @@ const { VueLoaderPlugin } = require('vue-loader');
 module.exports = {
     mode: 'development',
     entry: {
-        app: './src/main.js',
+        // app: './src/main.js', // dev-server.js
+        app: ['./src/main.js', 'webpack-hot-middleware/client?reload=true']  // app-server.js
     },
     output: {
         filename: '[name].bundle.js',
@@ -28,6 +29,11 @@ module.exports = {
             ]
         },{
             test: /\.(png|svg|jpg|gif)$/,
+            use: [
+                'file-loader'
+            ]
+        },{
+            test: /\.(woff|woff2|eot|ttf|otf)$/,
             use: [
                 'file-loader'
             ]

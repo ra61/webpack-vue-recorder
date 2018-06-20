@@ -1,25 +1,40 @@
 <template>
-    <div id = 'recorder'>
+    <el-main id = 'recorder'>
         
         <div>
-            <label>bitDepth</label>
-            
-            <select v-model="bitDepth">
+            <label>选择采样率：</label>
+            <el-select v-model="bitDepth" placeholder="请选择">
+                <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+                </el-option>
+            </el-select>
+
+            <!-- <select v-model="bitDepth">
                 <option disabled value="">请选择</option>
                 <option>8</option>
                 <option>16</option>
-            </select>
+            </select> -->
         </div>
 
-        <div>
-            <button @click = "init" :disabled="initButton">init recorder with options</button>
+        <div style="margin-top:15px;">
+            <el-button type="primary" @click = "init" :disabled="initButton" >init recorder</el-button>
+            <!-- <button @click = "init" :disabled="initButton">init recorder with options</button> -->
         </div>
 
         <h2>Recorder Commands</h2>
-        <button @click = "start" :disabled="startButton">start</button>
+        <!-- <el-button type="primary" @click = "start" :disabled="startButton" class="el-icon-caret-right"></el-button> -->
+
+        <el-button type="primary" @click = "start" :disabled="startButton">start</el-button>
+        <el-button type="primary" @click = "pause" :disabled="pauseButton">pause</el-button>
+        <el-button type="primary" @click = "resume" :disabled="resumeButton">resume</el-button>
+        <el-button type="primary" @click = "stop" :disabled="stopButton">stop</el-button>
+        <!-- <button @click = "start" :disabled="startButton">start</button>
         <button @click = "pause" :disabled="pauseButton">pause</button>
         <button @click = "resume" :disabled="resumeButton">resume</button>
-        <button @click = "stop" :disabled="stopButton">stop</button>
+        <button @click = "stop" :disabled="stopButton">stop</button> -->
 
         <h2>Recordings</h2>
         <ul id="recordingslist"></ul>
@@ -27,7 +42,7 @@
         <h2>Log</h2>
         <pre>{{ info }}</pre>
 
-    </div>
+    </el-main>
 </template>
 
 <script>
@@ -38,7 +53,14 @@
         name: 'recorder',
         data () {
             return {
-                bitDepth: 16,
+                options: [{
+                    value: '8',
+                    label: '8'
+                    }, {
+                    value: '16',
+                    label: '16'
+                }],
+                bitDepth: '',
                 initButton: false,
                 startButton: true,
                 pauseButton: true,
@@ -60,6 +82,7 @@
                     numberOfChannels: 2,
                     wavBitDepth: 16,
                     encoderPath: "./waveWorker.min.js"
+                    // encoderPath: "./pcmWorker.min.js"
                 });
                 
                 this.recorder.onstart = () => {
